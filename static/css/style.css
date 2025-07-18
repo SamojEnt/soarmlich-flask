@@ -1,0 +1,46 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f4f4f4;
+}
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1e88e5;
+    color: white;
+    padding: 10px 20px;
+}
+.navbar .logo {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+.navbar .menu a {
+    margin: 0 10px;
+    color: white;
+    text-decoration: none;
+}
+.navbar .logout a {
+    color: white;
+    text-decoration: none;
+}
+.login-container {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+.login-container h2 {
+    text-align: center;
+}
+.login-container input, .login-container button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+}
+.login-container .error {
+    color: red;
+    text-align: center;
+}
