@@ -1,24 +1,88 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body>
-    <div class="navbar">
-        <div class="logo">Soarmlich</div>
-        <div class="menu">
-            <a href="#">Dashboard</a>
-            <a href="#">Live Status</a>
-            <a href="#">Regular Reports</a>
-            <a href="#">Industrial Reports</a>
-            <a href="#">Calibration</a>
-        </div>
-        <div class="logout"><a href="/logout">Logout</a></div>
+{% extends "layout.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-white">Real-Time pH Monitoring</h2>
+    <div class="card bg-dark text-white p-3 shadow rounded">
+        <canvas id="phChart" width="720" height="300"></canvas>
     </div>
-    <div class="content">
-        <h1>Welcome, {{ session['user'] }}</h1>
-        <p>This is the dashboard.</p>
-    </div>
-</body>
-</html>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('phChart').getContext('2d');
+    const phData = {
+        labels: [],
+        datasets: [{
+            label: 'pH Value',
+            data: [],
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.2,
+            pointRadius: 3,
+            pointBackgroundColor: 'white',
+            pointBorderColor: 'rgb(75, 192, 192)',
+        }]
+    };
+
+    const phChart = new Chart(ctx, {
+        type: 'line',
+        data: phData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'white'
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: 'white' },
+                    title: {
+                        display: true,
+                        text: 'Time',
+                        color: 'white'
+                    }
+                },
+                y: {
+                    min: 0,
+                    max: 14,
+                    ticks: { color: 'white' },
+                    title: {
+                        display: true,
+                        text: 'pH',
+                        color: 'white'
+                    }
+                }
+            }
+        }
+    });
+
+    function fetchPH() {
+        fetch('/sensor_data/RS485_Sensor')
+            .then(response => response.json())
+            .then(data => {
+                const now = new Date().toLocaleTimeString();
+                const value = parseFloat(data.value);
+                if (!isNaN(value)) {
+                    if (phData.labels.length >= 20) {
+                        phData.labels.shift();
+                        phData.datasets[0].data.shift();
+                    }
+                    phData.labels.push(now);
+                    phData.datasets[0].data.push(value);
+                    phChart.update();
+                }
+            })
+            .catch(error => console.error('Sensor error:', error));
+    }
+
+    setInterval(fetchPH, 2000); // Fetch every 2 seconds
+    fetchPH(); // Initial fetch
+</script>
+{% endblock %}

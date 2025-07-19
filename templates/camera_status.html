@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block title %}Camera Status{% endblock %}
+{% block content %}
+<h3>Live Camera Feed</h3>
+<img src="{{ url_for('video_feed') }}" width="640" /><br><br>
+
+<label>Select Sensor:</label>
+<select id="sensorDropdown">
+    {% for sensor in sensors %}
+    <option value="{{ sensor }}">{{ sensor }}</option>
+    {% endfor %}
+</select>
+<p>Sensor Value: <span id="sensorValue">--</span></p>
+
+<script>
+    const dropdown = document.getElementById("sensorDropdown");
+    const sensorValue = document.getElementById("sensorValue");
+
+    function updateSensorData() {
+        const sensor = dropdown.value;
+        fetch(`/sensor_data/${sensor}`)
+            .then(res => res.json())
+            .then(data => {
+                sensorValue.textContent = data.value;
+            });
+    }
+
+    dropdown.addEventListener("change", updateSensorData);
+    setInterval(updateSensorData, 2000);
+    updateSensorData();
+</script>
+{% endblock %}

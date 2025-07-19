@@ -1,0 +1,103 @@
+{% extends "layout.html" %}
+{% block title %}Site Status{% endblock %}
+
+{% block content %}
+<div class="container mt-4 text-white">
+    <h3 class="mb-4">Site Status - Bajaj Electrical Site</h3>
+
+    <!-- Dropdown Filters -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <label for="statusFilter">Site Status</label>
+            <select id="statusFilter" class="form-control">
+                <option value="all">All</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="exceedanceFilter">Exceedance</label>
+            <select id="exceedanceFilter" class="form-control">
+                <option value="all">All</option>
+                <option value="yes">Exceedance Detected</option>
+                <option value="no">No Exceedance</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Site Table -->
+    <div class="table-responsive bg-dark rounded shadow p-3">
+        <table class="table table-bordered table-hover table-dark text-white">
+            <thead>
+                <tr>
+                    <th>Site Name</th>
+                    <th>Site Label</th>
+                    <th>Street</th>
+                    <th>City</th>
+                    <th>District</th>
+                    <th>State</th>
+                    <th>Industry Type</th>
+                    <th>Last Synchronized</th>
+                    <th>Site Status</th>
+                    <th>Site ID</th>
+                    <th>Exceedance</th>
+                </tr>
+            </thead>
+            <tbody id="siteTableBody">
+                <!-- Sample Data Row -->
+                <tr data-status="active" data-exceedance="yes">
+                    <td>Bajaj</td>
+                    <td>Site-A1</td>
+                    <td>MG Road</td>
+                    <td>Pune</td>
+                    <td>Nashik</td>
+                    <td>Maharashtra</td>
+                    <td>Electrical</td>
+                    <td>2025-07-04 16:10</td>
+                    <td>Active</td>
+                    <td>BAJ-101</td>
+                    <td>Exceedance Detected</td>
+                </tr>
+                <tr data-status="inactive" data-exceedance="no">
+                    <td>TestPlant</td>
+                    <td>Site-X2</td>
+                    <td>Jawahar Road</td>
+                    <td>Nagpur</td>
+                    <td>Nagpur</td>
+                    <td>Maharashtra</td>
+                    <td>Electrical</td>
+                    <td>2025-07-04 15:30</td>
+                    <td>Inactive</td>
+                    <td>TST-202</td>
+                    <td>No Exceedance</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Optional Filtering Script -->
+<script>
+    const statusFilter = document.getElementById('statusFilter');
+    const exceedanceFilter = document.getElementById('exceedanceFilter');
+    const rows = document.querySelectorAll('#siteTableBody tr');
+
+    function applyFilters() {
+        const status = statusFilter.value;
+        const exceedance = exceedanceFilter.value;
+
+        rows.forEach(row => {
+            const rowStatus = row.dataset.status;
+            const rowExceed = row.dataset.exceedance;
+
+            const statusMatch = (status === 'all' || rowStatus === status);
+            const exceedMatch = (exceedance === 'all' || rowExceed === exceedance);
+
+            row.style.display = (statusMatch && exceedMatch) ? '' : 'none';
+        });
+    }
+
+    statusFilter.addEventListener('change', applyFilters);
+    exceedanceFilter.addEventListener('change', applyFilters);
+</script>
+{% endblock %}
