@@ -1,16 +1,21 @@
-import serial
+import os
 import struct
 import time
 
-# Initialize serial port for RS485 sensor
-ser3 = serial.Serial(
-    port='/dev/ttyAMA2',  # Change this to your RS485 port
-    baudrate=9600,
-    parity=serial.PARITY_NONE,
-    stopbits=serial.STOPBITS_ONE,
-    bytesize=serial.EIGHTBITS,
-    timeout=2
-)
+# Only import and use serial if NOT running on Render
+RUNNING_ON_RENDER = os.getenv("RENDER", "false").lower() == "true"
+
+if not RUNNING_ON_RENDER:
+    import serial
+    # Initialize serial port for RS485 sensor
+    ser3 = serial.Serial(
+        port='/dev/ttyAMA2',  # Change this to your RS485 port
+        baudrate=9600,
+        parity=serial.PARITY_NONE,
+        stopbits=serial.STOPBITS_ONE,
+        bytesize=serial.EIGHTBITS,
+        timeout=2
+    )
 
 # Function to calculate CRC
 def calculate_crc(data):
@@ -29,6 +34,9 @@ def calculate_crc(data):
 def read_sensor(sensor_name):
     if sensor_name != 'RS485_Sensor':
         return "Invalid sensor"
+
+    if RUNNING_ON_RENDER:
+        return "Sensor reading not supported in cloud environment"
 
     try:
         # Construct Modbus request
@@ -74,7 +82,7 @@ def get_sensor_list():
 
 # Optional testing when running directly
 if __name__ == "__main__":
-    while True:
+    while not RUNNING_ON_RENDER:
         result = read_sensor("RS485_Sensor")
         print("pH:", result)
         time.sleep(2)
