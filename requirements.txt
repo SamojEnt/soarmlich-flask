@@ -4,3 +4,4 @@ gunicorn==21.2.0
 werkzeug==2.3.7
 pyserial==3.5
 opencv-python-headless==4.9.0.80
+numpy==1.26.4
